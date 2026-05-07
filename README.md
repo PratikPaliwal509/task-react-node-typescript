@@ -185,14 +185,20 @@ npm run dev
 * Stores double-encrypted data in MongoDB
 
 ---
+## 📸 Screenshots
 
-## 📸 Screenshots (Optional)
+### 🔐 Login Page
+![Login Page](./screenshots/login.png)
 
-* Login Page
-* Registration Form
-* Student List Table
-* Update Modal
+---
 
+### 📝 Registration Page
+![Register Page](./screenshots/register.png)
+
+---
+
+### 📋 Student List Page
+![Student List](./screenshots/student-list.png)
 ---
 
 ## 👨‍💻 Author
