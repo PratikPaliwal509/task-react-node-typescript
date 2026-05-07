@@ -1,7 +1,3 @@
-Here’s a clean, professional **README.md** for your project:
-
----
-
 # 🔐 Student Management System (React + Node + TypeScript)
 
 A full-stack **Student Registration & Login system** built using **React (TypeScript)** on the frontend and **Node.js + Express (TypeScript)** on the backend with **MongoDB**.
