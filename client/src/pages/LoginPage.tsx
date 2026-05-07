@@ -1,85 +1,93 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 import { encryptData } from "../utils/crypto";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!email.includes("@")) {
-    alert("Invalid Email");
-    return;
-  }
-
-  if (password.length < 4) {
-    alert("Password must be at least 4 characters");
-    return;
-  }
-
-  try {
-    // 🔐 Encrypt login data (same style as register)
-    const encryptedData = encryptData({ email, password });
-
-    console.log("Encrypted Login Data:", encryptedData);
-
-    const res = await fetch("http://localhost:5000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: encryptedData, // ✅ now encrypted like register
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message || "Login failed");
+    if (!email.includes("@")) {
+      toast.error("Invalid Email");
       return;
     }
 
-    localStorage.setItem("auth", "true");
-    alert("Login Successfully ✅");
+    if (password.length < 4) {
+      toast.error("Password must be at least 4 characters");
+      return;
+    }
 
-    navigate("/");
-  } catch (error) {
-    console.error(error);
-    alert("Server error during login");
-  }
-};
+    try {
+      const encryptedData = encryptData({ email, password });
+
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: encryptedData }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Login failed");
+        return;
+      }
+
+      localStorage.setItem("auth", "true");
+      toast.success("Login Successfully");
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error during login");
+    }
+  };
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <form
-        onSubmit={handleLogin}
-        className="p-6 border rounded w-[350px] space-y-3"
-      >
-        <h2 className="text-xl font-bold">Login</h2>
-
-        <input
-          className="border p-2 w-full"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
-          className="border p-2 w-full"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button className="bg-blue-500 text-white w-full p-2">
+    <div className="h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-md rounded-lg p-6 w-[350px]">
+        
+        <h2 className="text-2xl font-semibold text-center mb-5 text-gray-800">
           Login
-        </button>
-      </form>
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          
+          <div>
+            <label className="text-sm text-gray-600">Email</label>
+            <input
+              className="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-600">Password</label>
+            <input
+              type="password"
+              className="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-gray-400"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-900 transition"
+          >
+            Login
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 }

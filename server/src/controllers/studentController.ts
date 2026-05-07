@@ -3,10 +3,8 @@ import Student from "../models/Student";
 import { encrypt, decrypt, decryptFrontend } from "../utils/crypto";
 
 // CREATE
-console.log("studentController loaded") // Debug log to confirm controller loading  
 export const registerStudent = async (req: Request, res: Response) => {
   try {
-    console.log("data", req.body.data)
     const data = req.body.data;
 
     // Level 2 encryption
@@ -18,7 +16,6 @@ export const registerStudent = async (req: Request, res: Response) => {
     const student = await Student.create(encryptedData);
     res.status(201).json(student);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error creating student" });
   }
 };
@@ -51,7 +48,6 @@ export const getStudents = async (req: Request, res: Response) => {
 
     res.json(decrypted);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error fetching students" });
   }
 };
@@ -59,29 +55,24 @@ export const getStudents = async (req: Request, res: Response) => {
 // UPDATE
 export const updateStudent = async (req: Request, res: Response) => {
   try {
-    console.log("Update Payload:", req.params) // Debug log to check incoming data
     const { id } = req.params;
-    console.log("Update Payload:", req.body) // Debug log to check incoming data
     const encryptedData: any = {};
     // for (let key in req.body) {
     //   encryptedData[key] = encrypt(req.body[key]);
     // }
     const data = req.body.payload;
-    console.log("Data to Encrypt:", data) // Debug log to check data before encryption  
     for (let key in data) {
       if (key === "_id") continue; // ❌ NEVER encrypt or update _id
 
       encryptedData[key] = encrypt(data[key]);
     }
 
-    console.log("Encrypted Update Data:", id, encryptedData) // Debug log to check encrypted data before DB update  
     const updated = await Student.findByIdAndUpdate(id, encryptedData, {
       new: true,
     });
 
     res.json(updated);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Error updating student" });
   }
 };
@@ -99,8 +90,6 @@ export const deleteStudent = async (req: Request, res: Response) => {
 }; export const loginStudent = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body.data;
-    console.log("Login Data Received:", email, password);
-
     const students = await Student.find();
 
     const matchedStudent = students.find((student: any) => {
@@ -113,8 +102,6 @@ export const deleteStudent = async (req: Request, res: Response) => {
 
         const loginEmail = decryptFrontend(email);
         const loginPassword = decryptFrontend(password);
-
-        console.log("Stored email:", storedEmail, "Login email:", loginEmail);
 
         return storedEmail === loginEmail && storedPassword === loginPassword;
       } catch (err) {
@@ -142,7 +129,6 @@ export const deleteStudent = async (req: Request, res: Response) => {
       student: safeStudent,
     });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ error: "Error during login" });
   }
 };
