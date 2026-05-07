@@ -1,30 +1,41 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "../pages/LoginPage";
-// import StudentPage from "../pages/StudentPage";
 
+import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import StudentListPage from "../pages/StudentListPage";
+
 export default function AppRouter() {
-    const isLoggedIn = localStorage.getItem("auth");
-
-    return (
-        <BrowserRouter>
-            <Routes>
-
-                {/* Login */}
-                <Route path="/" element={<StudentListPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
-
-                {/* Protected Route */}
-                {/* <Route
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Home */}
+        <Route
           path="/"
           element={
-            isLoggedIn ? <StudentPage /> : <Navigate to="/login" />
+            localStorage.getItem("auth") === "true" ? (
+              <StudentListPage />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
-        /> */}
+        />
 
-            </Routes>
-        </BrowserRouter>
-    );
+        {/* Register */}
+        <Route path="/register" element={<RegisterPage />} />
+                
+
+        {/* Login */}
+        <Route
+          path="/login"
+          element={
+            localStorage.getItem("auth") !== "true" ? (
+              <LoginPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { encryptData } from "../utils/crypto";
 
@@ -39,9 +39,14 @@ export default function LoginPage() {
         return;
       }
 
+      // ✅ Store login info
       localStorage.setItem("auth", "true");
+      localStorage.setItem("user", JSON.stringify(data.student));
+      // or localStorage.setItem("token", data.token);
+
       toast.success("Login Successfully");
-      navigate("/");
+      // force refresh router
+      window.location.href = "/";
     } catch (error) {
       console.error(error);
       toast.error("Server error during login");
@@ -51,13 +56,13 @@ export default function LoginPage() {
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white shadow-md rounded-lg p-6 w-[350px]">
-        
+
         <h2 className="text-2xl font-semibold text-center mb-5 text-gray-800">
           Login
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          
+
           <div>
             <label className="text-sm text-gray-600">Email</label>
             <input
@@ -85,7 +90,15 @@ export default function LoginPage() {
           >
             Login
           </button>
-
+          <p className="text-sm text-center text-gray-600 mt-2">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              className="text-gray-800 font-medium hover:underline"
+            >
+              Register here
+            </Link>
+          </p>
         </form>
       </div>
     </div>
