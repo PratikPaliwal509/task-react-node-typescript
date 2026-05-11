@@ -21,8 +21,15 @@ export default function StudentListPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [form, setForm] = useState<Student | null>(null);
   const [loading, setLoading] = useState(false);
+  const handleLogout = () => {
+    localStorage.removeItem("auth");
+    localStorage.removeItem("user");
 
-  // 🔹 Fetch + decrypt
+    toast.success("Logged out successfully");
+
+    window.location.href = "/login";
+  };
+  // Fetch + decrypt
   const fetchStudents = async () => {
     try {
       const res = await fetch(`${API}/students`);
@@ -46,7 +53,7 @@ export default function StudentListPage() {
     fetchStudents();
   }, []);
 
-  // 🔹 Delete
+  // Delete
   const handleDelete = async (id: string) => {
     try {
       const res = await fetch(`${API}/student/${id}`, {
@@ -59,6 +66,22 @@ export default function StudentListPage() {
       }
 
       toast.success("Student deleted successfully!");
+
+      // CHECK IF SELF USER IS DELETED
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (currentUser?._id === id) {
+        // CLEAR SESSION
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth");
+
+        toast.info("Your account was deleted. Logging out...");
+
+        // REDIRECT TO LOGIN
+        window.location.href = "/login";
+        return;
+      }
+
       fetchStudents();
     } catch (error) {
       console.error(error);
@@ -66,7 +89,7 @@ export default function StudentListPage() {
     }
   };
 
-  // 🔹 Update
+  // Update
   const handleUpdate = async () => {
     if (!form || !form._id) {
       toast.error("Invalid update data");
@@ -108,10 +131,18 @@ export default function StudentListPage() {
   return (
     <div className="p-6 space-y-6 bg-gray-100 min-h-screen">
 
-      <h2 className="text-2xl font-semibold text-gray-800">
-        Student List
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          Student List
+        </h2>
 
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 cursor-pointer text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+          Logout
+        </button>
+      </div>
       {/* LIST */}
       <StudentList
         students={students}
@@ -138,8 +169,9 @@ export default function StudentListPage() {
             <input
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="border p-2 rounded"
+              className="border p-2 rounded bg-gray-100 cursor-not-allowed text-gray-500"
               placeholder="Email"
+              disabled
             />
 
             <input

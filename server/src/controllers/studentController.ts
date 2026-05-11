@@ -6,6 +6,21 @@ import { encrypt, decrypt, decryptFrontend } from "../utils/crypto";
 export const registerStudent = async (req: Request, res: Response) => {
   try {
     const data = req.body.data;
+    // CHECK DUPLICATE EMAIL (BACKEND ONLY)
+    const students = await Student.find();
+
+    const exists = students.find((student: any) => {
+      const emailAfterBackendDecrypt = decrypt(student.email);
+      const storedEmail = decryptFrontend(emailAfterBackendDecrypt);
+
+      const inputEmail = decryptFrontend(data.email);
+
+      return storedEmail === inputEmail;
+    });
+
+    if (exists) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
 
     // Level 2 encryption
     const encryptedData: any = {};
@@ -14,6 +29,7 @@ export const registerStudent = async (req: Request, res: Response) => {
     }
 
     const student = await Student.create(encryptedData);
+
     res.status(201).json(student);
   } catch (err) {
     res.status(500).json({ error: "Error creating student" });
@@ -34,7 +50,7 @@ export const getStudents = async (req: Request, res: Response) => {
         } else {
           const value = student[key];
 
-          // ✅ FIX: check before decrypting
+          // FIX: check before decrypting
           if (typeof value === "string") {
             obj[key] = decrypt(value);
           } else {
@@ -87,6 +103,7 @@ export const deleteStudent = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({ error: "Error deleting student" });
   }
+  
 }; export const loginStudent = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body.data;

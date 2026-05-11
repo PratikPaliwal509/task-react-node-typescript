@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { encryptData } from "../utils/crypto";
-
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-
+  useEffect(() => {
+    localStorage.removeItem("auth");
+    localStorage.removeItem("user");
+  }, []);
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -39,10 +41,9 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Store login info
+      // Store login info
       localStorage.setItem("auth", "true");
       localStorage.setItem("user", JSON.stringify(data.student));
-      // or localStorage.setItem("token", data.token);
 
       toast.success("Login Successfully");
       // force refresh router

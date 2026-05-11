@@ -37,7 +37,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // 🔐 Encrypt form data
+      // Encrypt form data
       const encryptedData = encryptData(form);
 
       const res = await axios.post("http://localhost:5000/api/register", {

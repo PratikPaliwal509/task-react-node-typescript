@@ -22,10 +22,10 @@ export default function AppRouter() {
 
         {/* Register */}
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
                 
-
         {/* Login */}
-        <Route
+        {/* <Route
           path="/login"
           element={
             localStorage.getItem("auth") !== "true" ? (
@@ -34,7 +34,7 @@ export default function AppRouter() {
               <Navigate to="/" replace />
             )
           }
-        />
+        /> */}
       </Routes>
     </BrowserRouter>
   );
